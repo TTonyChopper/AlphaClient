@@ -6,8 +6,8 @@ public class AlphaQueryBuilder
 
     private final String key;
 
-    public AlphaQueryBuilder() {
-        this.key = "GTRGYTUIYEJEHH";
+    public AlphaQueryBuilder(String key) {
+        this.key = key;
     }
 
     public String getFundamentals(ApiFundamentalFunction function, String symbol) {

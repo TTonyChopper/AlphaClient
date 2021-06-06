@@ -3,8 +3,10 @@ package com.vg.market;
 import com.vg.market.alpha.query.AlphaQueryBuilder;
 import com.vg.market.alpha.query.ApiFundamentalFunction;
 import com.vg.market.alpha.query.ApiTimesFunction;
+import io.vertx.config.ConfigRetriever;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.client.WebClient;
 import org.slf4j.Logger;
@@ -14,7 +16,7 @@ public class AlphaVerticle extends AbstractVerticle {
 
     private static final Logger log = LoggerFactory.getLogger("SampleLogger");
 
-    private AlphaQueryBuilder queryBuilder = new AlphaQueryBuilder();
+    private AlphaQueryBuilder queryBuilder;
 
     private HttpServer httpServer;
 
@@ -27,6 +29,16 @@ public class AlphaVerticle extends AbstractVerticle {
     public void start() {
         WebClient client = WebClient.create(vertx);
         final Router router = Router.router(vertx);
+
+        ConfigRetriever retriever = ConfigRetriever.create(vertx);
+        retriever.getConfig(ar -> {
+            if (ar.failed()) {
+                // Failed to retrieve the configuration
+            } else {
+                JsonObject config = ar.result();
+                queryBuilder = new AlphaQueryBuilder(config.getString("apikey"));
+            }
+        });
 
         ApiTimesFunction.getMap().forEach((k, v)->{
             router.route("/raw" + k).handler(ctx -> {
