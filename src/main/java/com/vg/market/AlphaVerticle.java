@@ -90,8 +90,8 @@ public class AlphaVerticle extends AbstractVerticle {
 
         httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router)
-                .listen(8085)
-                .onFailure(h->System.out.println("HTTP server failed on port 8085"));
+                .listen(9091)
+                .onFailure(h->System.out.println("HTTP server failed on port 9091"));
 
     }
 
