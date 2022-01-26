@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public enum ApiTimesFunction
+public enum ApiStockTimesFunction
 {
     Intraday("/intraday", "TIME_SERIES_INTRADAY"),
     IntradayExtended("/intradayExt", "TIME_SERIES_INTRADAY_EXTENDED"),
@@ -16,20 +16,20 @@ public enum ApiTimesFunction
     Monthly("/monthly", "TIME_SERIES_MONTHLY"),
     MonthlyAdjusted("/monthlyAdj", "TIME_SERIES_MONTHLY_ADJUSTED");
 
-    private final static Map<String, ApiTimesFunction> alphaTimes;
+    private final static Map<String, ApiStockTimesFunction> alphaTimes;
     static {
-        alphaTimes = Arrays.stream(ApiTimesFunction.values()).collect(Collectors.toMap(ApiTimesFunction::getUrl, Function.identity()));
+        alphaTimes = Arrays.stream(ApiStockTimesFunction.values()).collect(Collectors.toMap(ApiStockTimesFunction::getUrl, Function.identity()));
     }
 
     String url;
     String value;
 
-    ApiTimesFunction(String url, String value) {
+    ApiStockTimesFunction(String url, String value) {
         this.url = url;
         this.value = value;
     }
 
-    public static Map<String, ApiTimesFunction> getMap()
+    public static Map<String, ApiStockTimesFunction> getMap()
     {
         return alphaTimes;
     }

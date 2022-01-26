@@ -1,8 +1,9 @@
 package com.vg.market;
 
 import com.vg.market.alpha.query.AlphaQueryBuilder;
+import com.vg.market.alpha.query.ApiFXTimesFunction;
 import com.vg.market.alpha.query.ApiFundamentalFunction;
-import com.vg.market.alpha.query.ApiTimesFunction;
+import com.vg.market.alpha.query.ApiStockTimesFunction;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpServer;
@@ -40,28 +41,6 @@ public class AlphaVerticle extends AbstractVerticle {
             }
         });
 
-        ApiTimesFunction.getMap().forEach((k, v)->{
-            router.route("/raw" + k).handler(ctx -> {
-
-                String symbol = ctx.request().getParam("symbol");
-                symbol = (symbol == null) ? "TSLA" : symbol;
-                String interval = ctx.request().getParam("interval");
-                interval = (interval == null) ? "5min" : interval;
-
-                client
-                        .get(443, AlphaQueryBuilder.ALPHA_BASE_URL, queryBuilder.getTimes(v, symbol, interval))
-                        .ssl(true)
-                        .send()
-                        .onSuccess(response -> {
-                            log.debug("Received response with status code" + response.statusCode());
-                            ctx.response().putHeader("content-type", "text/json")
-                                    .send(response.body());
-                        })
-                        .onFailure(err ->
-                                log.debug("Something went wrong " + err.getMessage()));
-            });
-        });
-
         ApiFundamentalFunction.getMap().forEach((k, v)->{
             router.route("/raw" + k).handler(ctx -> {
 
@@ -79,6 +58,50 @@ public class AlphaVerticle extends AbstractVerticle {
                         })
                         .onFailure(err ->
                                 System.out.println("Something went wrong " + err.getMessage()));
+            });
+        });
+
+        ApiFXTimesFunction.getMap().forEach((k, v)->{
+            router.route("/raw/fx" + k).handler(ctx -> {
+
+                String from = ctx.request().getParam("from");
+                from = (from == null) ? "USD" : from;
+                String to = ctx.request().getParam("to");
+                to = (to == null) ? "EUR" : to;
+
+                client
+                        .get(443, AlphaQueryBuilder.ALPHA_BASE_URL, queryBuilder.getFXTimes(v, from, to))
+                        .ssl(true)
+                        .send()
+                        .onSuccess(response -> {
+                            log.debug("Received response with status code" + response.statusCode());
+                            ctx.response().putHeader("content-type", "text/json")
+                                    .send(response.body());
+                        })
+                        .onFailure(err ->
+                                log.debug("Something went wrong " + err.getMessage()));
+            });
+        });
+
+        ApiStockTimesFunction.getMap().forEach((k, v)->{
+            router.route("/raw/stock" + k).handler(ctx -> {
+
+                String symbol = ctx.request().getParam("symbol");
+                symbol = (symbol == null) ? "TSLA" : symbol;
+                String interval = ctx.request().getParam("interval");
+                interval = (interval == null) ? "5min" : interval;
+
+                client
+                        .get(443, AlphaQueryBuilder.ALPHA_BASE_URL, queryBuilder.getStockTimes(v, symbol, interval))
+                        .ssl(true)
+                        .send()
+                        .onSuccess(response -> {
+                            log.debug("Received response with status code" + response.statusCode());
+                            ctx.response().putHeader("content-type", "text/json")
+                                    .send(response.body());
+                        })
+                        .onFailure(err ->
+                                log.debug("Something went wrong " + err.getMessage()));
             });
         });
 

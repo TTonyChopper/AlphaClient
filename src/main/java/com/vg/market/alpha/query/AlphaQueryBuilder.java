@@ -16,7 +16,14 @@ public class AlphaQueryBuilder
                 +"&apikey=" + key;
     }
 
-    public String getTimes(ApiTimesFunction function, String symbol, String interval) {
+    public String getFXTimes(ApiFXTimesFunction function, String from, String to) {
+        return "/query?function=" + function.getValue()
+                +"&from_symbol=" + from
+                +"&to_symbol=" + to
+                +"&apikey=" + key;
+    }
+
+    public String getStockTimes(ApiStockTimesFunction function, String symbol, String interval) {
         return "/query?function=" + function.getValue()
                 +"&symbol=" + symbol
                 +"&apikey=" + key
