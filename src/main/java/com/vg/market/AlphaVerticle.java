@@ -1,9 +1,6 @@
 package com.vg.market;
 
-import com.vg.market.alpha.query.AlphaQueryBuilder;
-import com.vg.market.alpha.query.ApiFXTimesFunction;
-import com.vg.market.alpha.query.ApiFundamentalFunction;
-import com.vg.market.alpha.query.ApiStockTimesFunction;
+import com.vg.market.alpha.query.*;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.*;
 import io.vertx.core.http.HttpServer;
@@ -39,6 +36,28 @@ public class AlphaVerticle extends AbstractVerticle {
                 JsonObject config = ar.result();
                 queryBuilder = new AlphaQueryBuilder(config.getString("apikey"));
             }
+        });
+
+        ApiCryptoTimesFunction.getMap().forEach((k, v)->{
+            router.route("/raw/crypto" + k).handler(ctx -> {
+
+                String from = ctx.request().getParam("from");
+                from = (from == null) ? "BTC" : from;
+                String to = ctx.request().getParam("to");
+                to = (to == null) ? "EUR" : to;
+
+                client
+                        .get(443, AlphaQueryBuilder.ALPHA_BASE_URL, queryBuilder.getCryptoTimes(v, from, to))
+                        .ssl(true)
+                        .send()
+                        .onSuccess(response -> {
+                            log.debug("Received response with status code" + response.statusCode());
+                            ctx.response().putHeader("content-type", "text/json")
+                                    .send(response.body());
+                        })
+                        .onFailure(err ->
+                                log.debug("Something went wrong " + err.getMessage()));
+            });
         });
 
         ApiFundamentalFunction.getMap().forEach((k, v)->{

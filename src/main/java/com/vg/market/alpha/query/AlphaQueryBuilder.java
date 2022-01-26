@@ -10,6 +10,13 @@ public class AlphaQueryBuilder
         this.key = key;
     }
 
+    public String getCryptoTimes(ApiCryptoTimesFunction function, String from, String to) {
+        return "/query?function=" + function.getValue()
+                +"&symbol=" + from
+                +"&market=" + to
+                +"&apikey=" + key;
+    }
+
     public String getFundamentals(ApiFundamentalFunction function, String symbol) {
         return "/query?function=" + function.getValue()
                 +"&symbol=" + symbol
