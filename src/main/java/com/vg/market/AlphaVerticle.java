@@ -45,9 +45,11 @@ public class AlphaVerticle extends AbstractVerticle {
                 from = (from == null) ? "BTC" : from;
                 String to = ctx.request().getParam("to");
                 to = (to == null) ? "EUR" : to;
+                String interval = ctx.request().getParam("interval");
+                interval = (interval == null) ? "5min" : interval;
 
                 client
-                        .get(443, AlphaQueryBuilder.ALPHA_BASE_URL, queryBuilder.getCryptoTimes(v, from, to))
+                        .get(443, AlphaQueryBuilder.ALPHA_BASE_URL, queryBuilder.getCryptoTimes(v, from, to, interval))
                         .ssl(true)
                         .send()
                         .onSuccess(response -> {
