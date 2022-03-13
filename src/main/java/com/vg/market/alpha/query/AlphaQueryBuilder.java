@@ -24,10 +24,11 @@ public class AlphaQueryBuilder
                 +"&apikey=" + key;
     }
 
-    public String getFXTimes(ApiFXTimesFunction function, String from, String to) {
+    public String getFXTimes(ApiFXTimesFunction function, String from, String to, String interval) {
         return "/query?function=" + function.getValue()
                 +"&from_symbol=" + from
                 +"&to_symbol=" + to
+                +"&interval=" + interval
                 +"&apikey=" + key;
     }
 
